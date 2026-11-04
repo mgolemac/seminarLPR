@@ -1,0 +1,368 @@
+\documentclass{article}
+\usepackage{graphicx} % Required for inserting images
+
+\usepackage{inputenc}
+\usepackage{fontenc}
+\usepackage{babel}
+\usepackage{amsthm}
+\usepackage{amssymb}
+
+\theoremstyle{definition}
+\newtheorem{definicija}{Def}[section]
+
+\theoremstyle{plain}
+\newtheorem{teo}{Teorem}[section]
+\newtheorem{lema}{Propozicija}[section]
+
+
+\title{Unifikacija i rezolucija u logici prvog reda}
+\author{Marko Golemac}
+\date{Studeni 2026}
+
+\begin{document}
+
+\maketitle
+
+\section{Uvod}
+Matematička logika grana je matematike s kojom smo se susreli već na prvoj godini studija, kada smo proučili neke njezine osnove. Koristeći se matematičkom logikom, možemo precizno formalizirati i analizirati dokaze tvrdnji. Razvojem ranih ideja umjetne inteligencije sredinom 20. stoljeća, matematičari i računalni znanstvenici počeli su istraživati mogućnost automatizacije postupka dokazivanja matematičkih teorema. Cilj je bio razviti računalne programe koji bi mogli samostalno rješavati probleme za čije je rješavanje dotad bilo potrebno ljudsko zaključivanje. Herbrand\footnote{Jacques Herbrand (1908. – 1931.) bio je francuski matematičar i logičar.} bio je među matematičarima koji su postavili teorijske temelje mehaničkog dokazivanja teorema. Gilmore\footnote{Paul C. Gilmore (1925. – 2015.) bio je kanadski matematičar, logičar i računalni znanstvenik.} je 1960-ih godina razvio jedan od prvih računalnih programa za automatsko dokazivanje teorema, temeljen na Herbrandovim idejama. Ubrzo su se pojavile i druge, učinkovitije metode automatskog dokazivanja. Jedan od najvažnijih iskoraka dogodio se 1965. godine, kada je Robinson\footnote{John Alan Robinson (1930. – 2016.) bio je britanski matematičar, filozof i računalni znanstvenik.} predstavio princip rezolucije, koji je, zahvaljujući svojoj jednostavnosti i mogućnosti algoritamske implementacije, postao jedan od temeljnih postupaka automatskog dokazivanja teorema.
+
+\section{Osnove logike prvog reda}
+Kako bismo računalu omogućili automatsko dokazivanje matematičkih tvrdnji, najprije moramo pronaći način na koji ćemo mu te tvrdnje predstaviti. Čovjek će bez problema razumjeti da mačke piju mlijeko ako zna da su mačke sisavci i da svi sisavci piju mlijeko. Računalu, međutim, takav zaključak nije intuitivan. Propozicijskom logikom ne možemo adekvatno opisati ovakav oblik zaključivanja, iako nam je on u svakodnevnom životu sasvim prirodan. Pokušajmo tvrdnje „Mačke piju mlijeko”, „Mačke su sisavci” i „Sisavci piju mlijeko” predstaviti propozicijskim formulama (A), (B) i (C), redom. Budući da propozicijska logika svaku od njih promatra kao zasebnu, nedjeljivu tvrdnju, ne možemo izraziti njihovu unutarnju strukturu niti odnose između objekata o kojima govore. Stoga postoje interpretacije u kojima su tvrdnje (B) i (C) istinite, a tvrdnja (A) neistinite, odnosno vrijedi da (A) nije logička posljedica tvrdnji (B) i (C). Za njegovo formalno opisivanje potreban nam je izražajniji logički sustav – logika prvog reda. Logika prvog reda je formalni sustav koji omogućuje izražavanje tvrdnji o objektima, njihovim svojstvima i međusobnim odnosima. Pritom se koristimo logičkim veznicima, predikatima, varijablama, konstantama i kvantifikatorima kako bismo prirodne i matematičke tvrdnje zapisali u strogo definiranom obliku.
+
+\subsection*{Sintaksa logike prvog reda}
+Alfabet logike prvog reda sastoji se od: \begin{itemize}
+    \item Logičkih simbola ($\neg,\, \land,\, \lor,\, \rightarrow,\, \leftrightarrow,\, \forall\:i\: \exists$)
+    \item Prebrojivo mnogo varijabli ($x,\,y,\,z,\,x_1,\,x_2,\,x_3,...$)
+    \item Nelogičkih simbola:\begin{itemize}
+        \item n-mjesnih relacijskih simbola ($P, Q, R, R_1, R_2,...$)
+        \item n-mjesnih funkcijskih simbola ($f, g, h, f_{1} , f_{2}, ...$)
+        \item konstantskih simbola ($c_1, c_2, c_3, ...$)
+    \end{itemize}
+    \item Pomoćnih simbola (zagrade i zarez)
+    \end{itemize}
+Pritom, n-mjesnost označava broj argumenata koje relacijski ili funkcijski simbol zahtjeva, a $n\in \mathbb{N},\:n\ge1$. Funkcijske simbole koji imaju mjesnost $0$ ćemo poistovijetiti s konstantama i tako zapisivati u izrazima.
+
+\begin{definicija}
+\textbf{Term}\newline Term logike prvog reda definira se na sljedeći način:
+\begin{itemize}
+    \item Konstanta je term.
+    \item Varijabla je term.
+    \item Ako je $f$ n-mjesni funkcijski simbol, a $t_1,...,t_n$ termi, onda je $f(t_1,...,t_n)$ term.
+    \item Ništa osim izraza dobivenih primjenom prethodna tri pravila nije term.
+\end{itemize}
+\end{definicija}
+
+\begin{definicija}
+    \textbf{Atomarna formula}\newline
+    Ako je $P$ n-mjesni relacijski simbol i ako su $t_1,...,t_n$ termi, onda je $P(t_1,...,t_n)$ atomarna formula. Nijedan drugi izraz nije atomarna formula.
+\end{definicija}
+
+\begin{definicija}
+    \textbf{Formula}\newline
+    Formule definiramo rekurzivno:
+    \begin{enumerate}
+        \item Atomarna formula je formula.
+        \item Ako su F i G formule, onda su $\neg (F),\:(F\:\lor\:G),\:(F\:\land\:G),\:(F\rightarrow G)\:i\:(F\leftrightarrow G)$ formule.
+        \item Ako je F formula, a x varijabla, onda su $\forall xF\;i\;\exists xF$ formule.
+        \item Sve formule dobivene su primjenom konačno mnogo pravila $1-3$, a ništa osim tako dobivenih izraza nije formula.
+    \end{enumerate}
+\end{definicija}
+
+\begin{definicija}
+    \textbf{Slobodna/Vezana varijable}\newline
+    U formulama koje sadrže potformulu obilka $\forall xF$ ili $\exists xF$ za svaku pojavu od x u F kažemo da je u dosegu kvanitifikatora. Pojava varijable x u formuli F je vezana ako je u dosegu kvanitifikatora, inače je slobodna. Varijabla x je slobodna u G ako se barem jednom pojavljuje u G izvan dosega kvantifikatora, inače kažemo da je x vezana u G.
+\end{definicija}
+
+\subsection*{Semantika logike prvog reda}
+Za definiranje semantike logike prvog reda potrebno je odrediti značenje svih simbola koji se pojavljuju u formulama. U tu svrhu koristimo pojam strukture.
+
+\begin{definicija}\textbf{\(\sigma\)-struktura}\newline
+Neka je \(\sigma\) signatura logike prvog reda, odnosno skup konstantskih, funkcijskih i relacijskih simbola. $\sigma$-struktura \(\mathcal A\) sastoji se od nepraznog skupa \(A\), koji nazivamo nosačem strukture, i interpretacije simbola iz signature \(\sigma\). Interpretaciju označavamo s \(\varphi\), a ona svakom simbolu pridružuje odgovarajući objekt:\begin{itemize}
+    \item Svakom konstantskom simbolu \(c\) pridružujemo element \(c^{\mathcal A}\in A\).
+    \item Svakom funkcijskom simbolu \(f\) mjesnosti \(n\) pridružujemo funkciju \(f^{\mathcal A}:A^n\rightarrow A\).
+    \item Svakom relacijskom simbolu \(R\) mjesnosti \(n\) pridružujemo relaciju \(R^{\mathcal A}\subseteq A^n\).
+\end{itemize}
+\end{definicija}
+\begin{definicija}\textbf{Valuacija i interpretacija}\newline
+    Neka je \(\mathcal A\) $\sigma$-struktura. Valuacijom nazivamo svaku funkciju \(v\) koja svakoj varijabli pridružuje element nosača strukture, odnosno vrijedi \(v:\mathrm{Var}\rightarrow A\). Valuaciju proširujemo na skup svih termi logike prvog reda na sljedeći način:\begin{itemize}
+        \item Za svaku varijablu \(x\) vrijedi \(v(x)=v(x)\).
+        \item Za svaki konstantski simbol \(c\) vrijedi \(v(c)=c^{\mathcal A}\).
+        \item Za svaki funkcijski simbol \(f\) mjesnosti \(n\) i terme \(t_1,\ldots,t_n\) vrijedi:
+        \[
+        v(f(t_1,\ldots,t_n))=
+        f^{\mathcal A}(v(t_1),\ldots,v(t_n)).
+        \]
+    \end{itemize}
+\end{definicija}
+Uređeni par \((\mathcal A,v)\) nazivamo interpretacijom.
+\begin{definicija}\textbf{Istinitost formule}\newline
+    Istinitost formule \(F\) za danu interpretaciju \((\mathcal A,v)\), u oznaci \(\mathcal A\models_v F\), definiramo rekurzivno:\begin{enumerate}
+        \item Za atomarnu formulu \(R(t_1,\ldots,t_n)\) vrijedi:
+            \[
+            \mathcal A\models_v R(t_1,\ldots,t_n)
+            \iff
+            (t_1^{\mathcal A}[v],\ldots,t_n^{\mathcal A}[v])
+            \in R^{\mathcal A}.
+            \]
+        \item Formula \(\neg F\) istinita je ako i samo ako \(F\) nije istinita.
+        \item Formula \(F\land G\) istinita je ako i samo ako su obje formule \(F\) i \(G\) istinite.
+        \item Formula \(F\lor G\) istinita je ako i samo ako je barem jedna od formula \(F\) i \(G\) istinita.
+        \item Formula \(F\rightarrow G\) istinita je ako i samo ako je \(F\) neistinita ili je \(G\) istinita.
+        \item Formula \(F\leftrightarrow G\) istinita je ako i samo ako \(F\) i \(G\) imaju jednaku istinitosnu vrijednost.
+        \item Formula \(\forall xF\) istinita je ako i samo ako je \(F\) istinita za svaku moguću vrijednost varijable \(x\) iz domene \(A\), uz nepromijenjene vrijednosti svih ostalih varijabli.
+        \item Formula \(\exists xF\) istinita je ako i samo ako postoji barem jedna vrijednost varijable \(x\) iz domene \(A\) za koju je formula \(F\) istinita, uz nepromijenjene vrijednosti svih ostalih varijabli.
+    \end{enumerate}
+\end{definicija}
+
+\begin{definicija}\textbf{Ispunjivost i valjanost}\newline
+    Formulu \(F\) nazivamo:\begin{itemize}
+        \item \textbf{Ispunjivom} ako postoji interpretacija \((\mathcal A,v)\) za koju vrijedi \(\mathcal A\models_v F\).
+        \item \textbf{Oborivom} ako postoji interpretacija \((\mathcal A,v)\) za koju vrijedi \(\mathcal A\not\models_v F\).
+        \item \textbf{Valjanom} ako za svaku interpretaciju \((\mathcal A,v)\) vrijedi \(\mathcal A\models_v F\).
+    \end{itemize}
+\end{definicija}
+
+\section{Priprema formula za rezoluciju}
+\begin{definicija}\textbf{Literal i klauzula}\newline
+Literal je svaka atomarna formula ili njena negacija. Klauzula je disjunkcija konačno mnogo literala. Klauzulu zapisujemo kao skup njezinih literala, pri čemu redoslijed literala nije bitan. Skup klauzula je konačan skup klauzula koji interpretiramo kao konjunkciju svih njegovih elemenata.
+\end{definicija}
+Praznu klauzulu označavamo s $\Box$. Ona ne sadrži nijedan literal i uvijek je neistinita. Njezino izvođenje u postupku rezolucije označava proturječje, odnosno dokaz nezadovoljivosti početnog skupa klauzula. Varijable koje se pojavljuju u klauzulama podrazumijevaju se univerzalno kvantificiranima. Tako, primjerice, klauzula $\{P(x),Q(x)\}$ predstavlja formulu $\forall x(P(x)\lor Q(x))$.
+\subsection*{Normalne forme}
+Kako bismo formulu preveli u oblik pogodan za rezoluciju, koristimo nekoliko transformacija. Cilj je dobiti ekvivalentnu ili, u određenim koracima, zadovoljivo ekvivalentnu formulu koja se može prikazati kao skup klauzula. Podsjećam, formule F i G su logički ekvivalentne ako imaju jednaku istinitosnu vrijednost u svakoj interpretaciji.
+\begin{definicija}\textbf{Normalna konjunktivna forma}\newline
+Formula je u normalnoj konjunktivnoj formi ako je zapisana kao konjunkcija konačno mnogo klauzula, odnosno kao konjunkcija disjunkcija literala.
+\end{definicija}
+Primjer formule u normalnoj konjunktivnoj formi je:
+$(P\lor Q)\land(\neg R\lor S)\land T$.
+Pri prevođenju formula u normalnu konjunktivnu formu najprije uklanjamo veznike $\rightarrow$ i $\leftrightarrow$, koristeći njihove logički ekvivalentne zapise:\begin{itemize}
+    \item $F\rightarrow G \equiv \neg F\lor G$
+    \item $F\leftrightarrow G \equiv
+        (\neg F\lor G)\land(\neg G\lor F)$
+\end{itemize}
+Nakon toga negacije premještamo neposredno ispred atomarnih formula primjenom De Morganovih zakona i uklanjanjem dvostrukih negacija:
+\begin{itemize}
+    \item $\neg(F\land G)\equiv \neg F\lor\neg G$
+    \item $\neg(F\lor G)\equiv \neg F\land\neg G$
+    \item $\neg\neg F\equiv F.$
+\end{itemize}
+Dobivena formula nalazi se u normalnoj negacijskoj formi, odnosno negacije se pojavljuju isključivo ispred atomarnih formula. Primjenom distributivnog zakona:\[F\lor(G\land H)\equiv
+(F\lor G)\land(F\lor H)\]
+formulu možemo transformirati u normalnu konjunktivnu formu.
+Kod formula logike prvog reda potrebno je dodatno ukloniti egzistencijalne kvantifikatore kako bismo dobili oblik pogodan za rezoluciju. To postižemo postupkom koji nazivamo Skolemizacija.
+\begin{definicija}\textbf{Skolemizacija}\newline
+Skolemizacija je postupak uklanjanja egzistencijalnih kvantifikatora iz formule njihovom zamjenom Skolemovim konstantama ili funkcijskim simbolima.
+\end{definicija}
+Ako egzistencijalni kvantifikator nije unutar dosega nijednog univerzalnog kvantifikatora, odgovarajuću varijablu možemo zamijeniti novom konstantom, koju nazivamo Skolemovom konstantom. Primjerice:
+
+\[
+\exists xP(x) \rightarrow
+P(c)
+\]\newline
+Pritom, c mora biti nova konstanta za cijelu formulu.
+
+Ako se egzistencijalni kvantifikator nalazi unutar dosega univerzalnog kvantifikatora, zamjena se vrši novim funkcijskim simbolom koji ovisi o svim varijablama vezanima univerzalnim kvantifikatorima čiji je doseg obuhvaća.
+Primjerice:
+
+\[
+\forall x\exists yP(x,y) \rightarrow
+\forall xP(x,f(x))
+\]
+Pritom, f mora biti novi funkcijski simbol za cijelu formulu.
+Skolemizacija ne čuva logičku ekvivalenciju početne i dobivene formule, već čuva njihovu ispunjivost. Drugim riječima, početna formula ispunjiva je ako i samo ako je ispunjiva njezina Skolemizirana verzija. Ako je početna formula \(F\) ispunjiva, tada postoji interpretacija u kojoj vrijedi egzistencijalni kvantifikator. Element koji zadovoljava formulu možemo odabrati kao interpretaciju nove Skolemove konstante \(c\). Time dobivamo interpretaciju proširene signature u kojoj je \(F'\) istinita. Obratno, ako je Skolemizirana formula \(F'\) ispunjiva, tada njezina interpretacija, zanemarimo li interpretaciju novih Skolemova simbola, daje interpretaciju u kojoj je istinita i početna formula \(F\). Nakon uklanjanja implikacija i ekvivalencija, svođenja negacija na atomarne formule, Skolemizacije i prevođenja u normalnu konjunktivnu formu, dobivenu formulu možemo zapisati kao skup klauzula. Takav prikaz omogućuje primjenu rezolucijskog pravila, koje ćemo detaljnije proučiti u narednim poglavljima.
+
+\section{Unifikacija}
+U prethodnom poglavlju definirali smo literale i klauzule te pokazali kako se formule logike prvog reda mogu prevesti u skup klauzula. Kako bismo mogli primijeniti pravilo rezolucije na takve klauzule, potrebno je uvesti postupak kojim možemo izjednačiti određene termine, odnosno literale. Taj postupak nazivamo unifikacijom.
+\begin{definicija}\textbf{Supstitucija}\newline
+Supstitucijom nazivamo konačan skup uređenih parova oblika $(x\mapsto t)$, gdje je $x$ varijabla, a $t$ term logike prvog reda. Pri tome se svaka varijabla može pojaviti najviše jednom na lijevoj strani uređenog para. Supstituciju označavamo sa ($\sigma$), odnosno općenito, malim grčkim slovima.
+\end{definicija}
+Primjerice, supstitucija
+\[
+\sigma=\{x\mapsto a,\ y\mapsto f(z)\}
+\]
+znači da varijablu $x$ zamjenjujemo konstantom $a$, a varijablu $y$ termom $f(z)$.
+Primjenu supstitucije na termine definiramo rekurzivno:
+\begin{itemize}
+\item Ako je $x$ varijabla koja se pojavljuje u supstituciji $(\sigma)$, tada je $(x\sigma)$ term pridružen varijabli $x$.
+\item Ako varijabla $x$ nije obuhvaćena supstitucijom $(\sigma)$, tada vrijedi $(x\sigma = x)$.
+\item Za konstantu $c$ vrijedi $(c\sigma = c)$.
+\item Za n-mjesni funkcijski simbol $f$ i terme $t_1,\ldots,t_n$ vrijedi:
+\[
+f(t_1,\ldots,t_n)\sigma
+=
+f(t_1\sigma,\ldots,t_n\sigma).
+\]
+\end{itemize}
+Supstituciju možemo primijeniti i na atomarne formule, literale i klauzule. Pritom se supstitucija primjenjuje na sve termove koji se pojavljuju u njima, dok se relacijski simboli i logički veznici ne mijenjaju.
+Primjerice, primjenom supstitucije
+\[
+\sigma={x\mapsto a,\ y\mapsto f(z)}
+\]
+na atomarnu formulu $P(x,y)$ dobivamo:
+\[
+P(x,y)\sigma=P(a,f(z)).
+\]
+Jednako tako, na klauzulu
+\[
+K=\{P(x),\neg Q(x,y)\}
+\]
+primjenom iste supstitucije dobivamo:
+\[
+K\sigma=\{P(a),\neg Q(a,f(z))\}.
+\]
+\begin{definicija}\textbf{Unifikator}\newline
+Neka su $t_1$ i $t_2$ termovi logike prvog reda. Supstituciju $\sigma$ nazivamo unifikatorom termova $t_1$ i $t_2$ ako vrijedi:
+\[
+t_1\sigma=t_2\sigma.
+\]
+Ako postoji takva supstitucija, kažemo da su termovi $t_1$ i $t_2$ unificirajući.
+\end{definicija}
+Kod unifikacije atomarnih formula vrijedi analogno pravilo. Dvije atomarne formule mogu se unificirati ako imaju isti relacijski simbol i jednaku mjesnost te ako se njihovi odgovarajući argumenti mogu unificirati.
+\begin{definicija}\textbf{Najopćenitiji unifikator}\newline
+Neka su \(t_1\) i \(t_2\) termovi te neka je \(\sigma\) njihov unifikator. Supstituciju \(\sigma\) nazivamo najopćenitijim unifikatorom (engl. Most General Unifier, MGU) ako za svaki unifikator \(\theta\) termova \(t_1\) i \(t_2\) postoji supstitucija \(\delta\) takva da vrijedi:
+\[
+\theta=\sigma\circ\delta.
+\]
+Pritom $\circ$ označauje kompoziciju supstitucija.
+\end{definicija}
+\subsection*{Algoritam unifikacije}
+Unifikaciju je moguće provesti algoritamski. Osnovna ideja algoritma jest postupno uspoređivati termove i pronalaziti supstitucije koje uklanjaju njihove razlike. Pritom se dobivene supstitucije primjenjuju na preostale dijelove izraza.
+Algoritam se temelji na nekoliko osnovnih pravila:
+
+\begin{enumerate}
+\item Ako su dva terma jednaka, nije potrebna nikakva dodatna supstitucija.
+\item Ako je jedan od termova varijabla, moguće ju je zamijeniti drugim termom, pod uvjetom da pritom ne nastaje proturječje.
+\item Ako su oba terma funkcijski izrazi, moraju imati jednak funkcijski simbol i jednaku mjesnost. U tom slučaju potrebno je unificirati njihove odgovarajuće argumente.
+\item Ako su dva terma različite konstante ili imaju različite funkcijske simbole, unifikacija nije moguća.
+\end{enumerate}
+Posebno je važan uvjet koji sprječava zamjenu varijable termom koji već sadrži tu istu varijablu. Taj uvjet nazivamo provjerom pojavnosti (engl. \textit{occurs check}).
+Primjerice, pokušajmo unificirati termove $x\:i\:f(x)$. Da bi oni postali jednaki, morali bismo primijeniti supstituciju $x\mapsto f(x)$. Međutim, takva supstitucija nije dopuštena jer se varijabla $x$ pojavljuje unutar terma $f(x)$. Stoga navedeni termovi nisu unificirajući.
+
+Pogledajmo sada primjer unifikacije koji uključuje više koraka. Želimo unificirati termove:
+\[
+t_1=f(x,g(y)), \qquad t_2=f(g(a),g(z)).
+\]
+Najprije uspoređujemo funkcijske simbole na najvišoj razini. Budući da su oba terma oblika $f(\ldots,\ldots)$, potrebno je unificirati njihove odgovarajuće argumente:
+\[
+x \quad i \quad g(a), \qquad
+g(y) \quad i \quad g(z)
+\]
+Iz prve usporedbe dobivamo supstituciju:
+\[
+\sigma_1=\{x\mapsto g(a)\}
+\]
+Iz druge usporedbe, budući da su funkcijski simboli jednaki, uspoređujemo njihove argumente te dobivamo:
+\[
+\sigma_2=\{y\mapsto z\}
+\]
+Konačna supstitucija glasi:
+\[
+\sigma=\{x\mapsto g(a),\ y\mapsto z\}
+\]
+Provjerom dobivamo:
+\[
+t_1\sigma=f(g(a),g(z))=t_2\sigma.
+\]
+Dakle, pronašli smo najopćenitiji unifikator navedenih termina.
+\section{Rezolucija}
+U prethodnom poglavlju definirali smo unifikaciju i najopćenitiji unifikator, koji nam omogućuju izjednačavanje termova i literala primjenom odgovarajućih supstitucija. Sada možemo definirati pravilo rezolucije, kojim iz dviju klauzula izvodimo novu klauzulu. Rezolucija se temelji na pronalaženju komplementarnih literala, odnosno literala suprotnih predznaka čiji se atomi mogu unificirati. Pravilo rezolucije omogućuje izvođenje nove klauzule uklanjanjem dvaju komplementarnih literala iz dviju klauzula, uz primjenu odgovarajućeg unifikatora.
+\begin{definicija}\textbf{Rezolventa}\newline
+Neka su $K_1$ i $K_2$ klauzule takve da vrijedi:
+\[
+K_1=\{L_1\}\cup C_1,
+\qquad
+K_2=\{\neg L_2\}\cup C_2,
+\]
+gdje su $C_1$ i $C_2$ skupovi literala, a $L_1$ i $L_2$ atomarne formule. Neka je $\sigma$ najopćenitiji unifikator formula $L_1$ i $L_2$. Tada klauzulu
+\[
+R=(C_1\cup C_2)\sigma
+\]
+nazivamo rezolventom klauzula $K_1$ i $K_2$ s unifikatorom $\sigma$.
+\end{definicija}
+Drugim riječima, iz dviju klauzula uklanjamo komplementarne literale te na preostale literale primjenjujemo najopćenitiji unifikator. Dobiveni skup literala predstavlja novu klauzulu. Prije primjene pravila rezolucije potrebno je osigurati da varijable dviju klauzula budu međusobno različite. To postižemo preimenovanjem vezanih, odnosno univerzalno kvantificiranih varijabli u klauzulama, tako da se varijable različitih klauzula ne preklapaju. Takav postupak nazivamo standardizacijom varijabli. Cilj primjene rezolucije jest izvođenje novih klauzula sve dok ne dobijemo praznu klauzulu ili dok više nije moguće izvesti nove klauzule. Prazna klauzula uvijek je neistinita jer ne sadrži nijedan literal koji bi mogao učiniti disjunkciju istinitom. Njezino izvođenje stoga predstavlja dokaz proturječja.
+Primjerice, promotrimo klauzule:
+\[
+K_1=\{P(a)\},\qquad K_2=\{\neg P(a)\}.
+\]
+Budući da su njihovi literali komplementarni i već međusobno jednaki, za unifikaciju nije potrebna nikakva supstitucija. Primjenom pravila rezolucije dobivamo:
+\[
+R=\Box.
+\]
+Time smo pokazali da skup klauzula koji sadrži $K_1$ i $K_2$ nije ispunjiv. Rezoluciju možemo koristiti za dokazivanje da je određena formula logička posljedica zadanih premisa. Ideja se temelji na svođenju problema na ispitivanje ispunjivosti skupa klauzula.
+\begin{lema} Neka su $F_1$ i $F_2$ klauzule, a $G$ klauzula dobivena rezolucijom $F_1$ i $F_2$. Tada vrijedi $F_1,F_2\models G$.
+\end{lema}
+
+\textbf{Dokaz:}\newline
+Prema definiciji logičke posljedice, $G$ će biti logička posljedica $F_1$ i $F_2$ ako i samo ako ne postoji interpretacija u kojoj su $F_1$ i $F_2$ istinite, a $G$ neistinita. Kako je $G$ dobivena rezolucijom klauzula $F_1$ i $F_2$, postoje literali $L_1$ i $L_2$ te klauzule $K_1$ i $K_2$ takve da, bez smanjenja općenitosti, vrijedi:
+\[
+F_1 = {L_1}\cup K_1 \quad
+F_2 = {\neg L_2}\cup K_2
+\]
+Neka je $\sigma$ najopćenitiji unifikator literala $L_1$ i $L_2$. Tada vrijedi:
+\[
+L_1\sigma=L_2\sigma \quad
+G=(K_1\cup K_2)\sigma.
+\]
+Neka je $(\mathcal A,v)$ proizvoljna interpretacija u kojoj su $F_1$ i $F_2$ istinite klauzule. Obzirom da su $L_1\sigma$ i $\neg L_2\sigma$ suprotni literali, samo jedan od njih može biti istinit. Promotrimo dva slučaja:
+
+\begin{enumerate}
+\item Ako je $L_1\sigma$ istinit, tada je $\neg L_2\sigma$ neistinit. Kako je klauzula $F_2\sigma$ istinita, mora vrijediti da je $K_2\sigma$ istinita. Iz toga slijedi da je i $G$ istinita.
+\item Ako je $L_1\sigma$ neistinit, tada je $\neg L_2\sigma$ istinit. Kako je klauzula $F_1\sigma$ istinita, mora vrijediti da je $K_1\sigma$ istinita. Iz toga slijedi da je i $G$ istinita.
+\end{enumerate}
+
+Obzirom da smo uzeli proizvoljnu interpretaciju u kojoj su $F_1$ i $F_2$ istinite, zaključujemo da vrijedi početna tvrdnja.
+
+Rezolucija nam tako omogućuje dokazivanje logičkih posljedica svođenjem problema na izvođenje prazne klauzule. U sljedećem poglavlju razmotrit ćemo teorijska svojstva rezolucije, odnosno njezinu ispravnost i potpunost.
+
+\section{Ispravnost i potpunost rezolucije}
+U prethodnom poglavlju definirali smo pravilo rezolucije i pokazali kako se ono koristi za izvođenje novih klauzula. Sada ćemo razmotriti dva važna svojstva rezolucijskog postupka: ispravnost i potpunost. Ispravnost nam govori da rezolucijom ne možemo izvesti neispravne zaključke, dok potpunost osigurava da rezolucijom možemo dokazati svako proturječje koje postoji u početnom skupu klauzula. Prije dokazivanja potpunosti potrebno je spomenuti još jedno pravilo koje se koristi u rezolucijskom postupku. Osim rezolucije između dviju klauzula, u logici prvog reda koristimo i pravilo faktorizacije. Ono omogućuje uklanjanje jednog od dvaju literala istog predznaka koji se mogu unificirati.
+\begin{definicija}\textbf{Faktorizacija}\newline
+Neka je $K=\{L_1,L_2\}\cup C$ klauzula i neka je $\sigma$ najopćenitiji unifikator literala $L_1$ i $L_2$. Tada klauzulu
+\[
+K'=(\{L_1\}\cup C)\sigma
+\]
+nazivamo faktorom klauzule $K$.
+\end{definicija}
+Primjerice, za klauzulu
+\[
+K=\{P(x),P(a),Q(x)\}
+\]
+supstitucija $\sigma=\{x\mapsto a\}$ unificira literale $P(x)$ i $P(a)$. Primjenom faktorizacije dobivamo:
+\[
+K'=\{P(a),Q(a)\}.
+\]
+\subsection*{Ispravnost rezolucije}
+Prvo ćemo dokazati da rezolucijskim postupkom ne možemo izvesti praznu klauzulu iz ispunjivog skupa klauzula.
+
+\begin{teo} \textbf{Ispravnost rezolucije}\newline
+Neka je $\Gamma$ skup klauzula. Ako je moguće iz $\Gamma$ primjenom pravila rezolucije i faktorizacije izvesti praznu klauzulu $\Box$, tada je $\Gamma$ neispunjiv.
+\end{teo}
+
+\textbf{Dokaz:}\newline
+U Propoziciji 5.1. dokazali smo da je rezolventa logička posljedica svojih roditeljskih klauzula. Isto svojstvo vrijedi i za faktorizaciju jer je faktor klauzule logička posljedica početne klauzule.
+Pretpostavimo suprotno, odnosno da je $\Gamma$ ispunjiv. Tada postoji interpretacija u kojoj su sve klauzule iz $\Gamma$ istinite.
+Budući da je svaka nova klauzula dobivena rezolucijom ili faktorizacijom logička posljedica svojih roditeljskih klauzula, ona mora biti istinita u svakoj interpretaciji u kojoj su njezine roditeljske klauzule istinite.
+Prema tome, indukcijom po broju primijenjenih pravila zaključujemo da bi sve izvedene klauzule morale biti istinite u promatranoj interpretaciji.
+Međutim, prazna klauzula $\Box$ uvijek je neistinita.
+Stoga je $\Gamma$ neispunjiv. $\square$
+
+\subsection*{Potpunost rezolucije}
+Ispravnost nam jamči da izvođenjem prazne klauzule dokazujemo neispunjivost početnog skupa klauzula. S druge strane, želimo osigurati i da za svaki neispunjiv skup klauzula postoji konačan niz primjena pravila rezolucije kojim možemo izvesti praznu klauzulu. Za dokazivanje potpunosti koristimo Herbrandov teorem.
+
+\begin{teo} \textbf{Herbrandov teorem}\newline
+Skup klauzula logike prvog reda neispunjiv je ako i samo ako postoji konačan skup njegovih prizemljenih instanci koji je neispunjiv.
+\end{teo} 
+Prizemljenom klauzulom nazivamo klauzulu koja ne sadrži varijable, odnosno klauzulu u kojoj su sve varijable zamijenjene odgovarajućim termovima bez varijabli. Herbrandov teorem omogućuje nam da problem ispitivanja ispunjivosti skupa klauzula logike prvog reda svedemo na problem ispitivanja ispunjivosti konačnog skupa klauzula propozicijske logike. Za dokaz potpunosti potrebna nam je još sljedeća lema.
+\begin{lema} \textbf{Lema o podizanju rezolucije}\newline
+Ako je rezolventa dviju prizemljenih instanci klauzula $K_1$ i $K_2$ prizemljena, tada postoji klauzula koja se može dobiti rezolucijom ili faktorizacijom klauzula $K_1$ i $K_2$, a čija je prizemljena instanca jednaka toj rezolventi.
+\end{lema}
+Drugim riječima, rezolucija provedena nad prizemljenim instancama može se prenijeti na izvorne klauzule primjenom odgovarajućeg unifikatora. Upravo nam to omogućuje da izvođenje nad prizemljenim klauzulama pretvorimo u izvođenje nad izvornim klauzulama.
+\begin{teo} \textbf{Potpunost rezolucije}\newline
+Neka je $\Gamma$ konačan skup klauzula logike prvog reda. Ako je $\Gamma$ neispunjiv, tada je moguće primjenom pravila rezolucije i faktorizacije izvesti praznu klauzulu $\Box$.
+\end{teo}
+
+\textbf{Dokaz:}\newline
+Pretpostavimo da je $\Gamma$ neispunjiv. Prema Herbrandovu teoremu postoji konačan skup prizemljenih instanci klauzula iz $\Gamma$ koji je neispunjiv. Budući da su sve klauzule u tom skupu prizemljene, možemo ih promatrati kao klauzule propozicijske logike. Prema potpunosti rezolucije u propozicijskoj logici, iz tog skupa moguće je izvesti praznu klauzulu $\Box$. Sada primjenom leme o podizanju rezolucije možemo pojedine korake dobivenog izvođenja prenijeti na izvorne klauzule iz $\Gamma$. Ako je pritom potrebno, koristimo i pravilo faktorizacije. Na taj način dobivamo konačan niz primjena pravila rezolucije i faktorizacije kojim iz početnog skupa klauzula $\Gamma$ izvodimo praznu klauzulu $\Box$. Time smo dokazali potpunost rezolucije. $\square$
+
+\section{Zaključak}
+Dokazali smo dva temeljna svojstva rezolucijskog postupka. Ispravnost nam jamči da izvođenje prazne klauzule uvijek odgovara stvarnom proturječju u početnom skupu klauzula, dok potpunost jamči da se svako takvo proturječje može dokazati rezolucijom i faktorizacijom. Zajedno, ova dva svojstva čine rezoluciju ispravnim i potpunim postupkom za dokazivanje neispunjivosti skupova klauzula logike prvog reda. Koristeći ova svojstva, možemo zaključiti da, iako nije moguće zajamčiti da će se za svaku valjanu tvrdnju pronaći konačan automatski dokaz, svaka tvrdnja koja nije logička posljedica zadanih premisa može se u konačnom broju koraka automatski opovrgnuti primjenom principa unifikacije, faktorizacije i rezolucije.
+\end{document}

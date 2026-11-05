@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unifikacija i rezolucija u logici prvog reda - Marko Golemac</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f8fafc;
+      color: #1e293b;
+      scroll-behavior: smooth;
+    }
+    code, pre, .math-expr {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .definition-card {
+      border-left: 4px solid #2563eb;
+    }
+    .theorem-card {
+      border-left: 4px solid #059669;
+    }
+    .example-card {
+      border-left: 4px solid #d97706;
+    }
+    .proof-card {
+      background-color: #f1f5f9;
+      border-left: 3px solid #64748b;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between antialiased">
+  <header class="bg-slate-900 text-white border-b border-slate-800 sticky top-0 z-50 shadow-md">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+      <div>
+        <span class="text-xs font-semibold tracking-wider uppercase text-blue-400 bg-blue-950 px-2.5 py-1 rounded-full border border-blue-800">
+          Seminarski rad
+        </span>
+        <h1 class="text-xl md:text-2xl font-bold mt-1 text-slate-100">
+          Unifikacija i rezolucija u logici prvog reda
+        </h1>
+        <p class="text-xs text-slate-400 mt-0.5">
+          Autor: <span class="text-slate-200 font-medium">Marko Golemac</span> &bull; Studeni 2026.
+        </p>
+      </div>
+
+      <nav class="flex flex-wrap gap-1 text-xs font-medium bg-slate-800/80 p-1.5 rounded-xl border border-slate-700">
+        <button onclick="showSection('uvod')" id="btn-uvod" class="nav-btn px-3 py-1.5 rounded-lg transition-colors bg-blue-600 text-white">Uvod</button>
+        <button onclick="showSection('osnove')" id="btn-osnove" class="nav-btn px-3 py-1.5 rounded-lg transition-colors text-slate-300 hover:text-white hover:bg-slate-700">Osnove</button>
+        <button onclick="showSection('priprema')" id="btn-priprema" class="nav-btn px-3 py-1.5 rounded-lg transition-colors text-slate-300 hover:text-white hover:bg-slate-700">Priprema</button>
+        <button onclick="showSection('unifikacija')" id="btn-unifikacija" class="nav-btn px-3 py-1.5 rounded-lg transition-colors text-slate-300 hover:text-white hover:bg-slate-700">Unifikacija</button>
+        <button onclick="showSection('rezolucija')" id="btn-rezolucija" class="nav-btn px-3 py-1.5 rounded-lg transition-colors text-slate-300 hover:text-white hover:bg-slate-700">Rezolucija</button>
+        <button onclick="showSection('svojstva')" id="btn-svojstva" class="nav-btn px-3 py-1.5 rounded-lg transition-colors text-slate-300 hover:text-white hover:bg-slate-700">Svojstva</button>
+        <button onclick="showSection('literatura')" id="btn-literatura" class="nav-btn px-3 py-1.5 rounded-lg transition-colors text-slate-300 hover:text-white hover:bg-slate-700">Literatura</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-6xl w-full mx-auto px-4 py-8 flex-grow">
+
+    <section id="uvod" class="tab-content space-y-6">
+      <div class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200">
+        <h2 class="text-2xl font-bold text-slate-800 mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">
+          <span class="text-blue-600">1.</span> Uvod
+        </h2>
+        <p class="text-slate-600 leading-relaxed mb-4">
+          Matematička logika grana je matematike s kojom se susrećemo na samom početku studija. Koristeći se matematičkom logikom, možemo precizno formalizirati i analizirati dokaze tvrdnji. Razvojem ranih ideja umjetne inteligencije sredinom 20. stoljeća, matematičari i računalni znanstvenici počeli su istraživati mogućnost automatizacije postupka dokazivanja matematičkih teorema.
+        </p>
+        <p class="text-slate-600 leading-relaxed mb-6">
+          Cilj je bio razviti računalne programe koji bi mogli samostalno rješavati probleme za čije je rješavanje dotad bilo potrebno ljudsko zaključivanje.
+        </p>
+
+        <h3 class="text-lg font-semibold text-slate-800 mb-3">Povijesni razvoj automatskog dokazivanja</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 hover:border-blue-300 transition-all">
+            <div class="text-xs font-bold text-blue-600 uppercase tracking-wide">Pionirske ideje</div>
+            <h4 class="font-bold text-slate-800 mt-1">Jacques Herbrand</h4>
+            <p class="text-xs text-slate-500 mb-2">(1908. – 1931.)</p>
+            <p class="text-sm text-slate-600">Francuski matematičar i logičar koji je postavio teorijske temelje mehaničkog dokazivanja teorema.</p>
+          </div>
+
+          <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 hover:border-blue-300 transition-all">
+            <div class="text-xs font-bold text-blue-600 uppercase tracking-wide">Rani računalni programi</div>
+            <h4 class="font-bold text-slate-800 mt-1">Paul C. Gilmore</h4>
+            <p class="text-xs text-slate-500 mb-2">(1925. – 2015.)</p>
+            <p class="text-sm text-slate-600">Razvio 1960-ih jedan od prvih računalnih programa za automatsko dokazivanje teorema temeljen na Herbrandovim idejama.</p>
+          </div>
+
+          <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 hover:border-blue-300 transition-all">
+            <div class="text-xs font-bold text-blue-600 uppercase tracking-wide">Prekretnica (1965)</div>
+            <h4 class="font-bold text-slate-800 mt-1">John Alan Robinson</h4>
+            <p class="text-xs text-slate-500 mb-2">(1930. – 2016.)</p>
+            <p class="text-sm text-slate-600">Predstavio princip rezolucije, koji je zbog jednostavnosti i algoritamske izvedivosti postao temelj automatskog dokazivanja.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="osnove" class="tab-content hidden space-y-6">
+      <div class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200">
+        <h2 class="text-2xl font-bold text-slate-800 mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">
+          <span class="text-blue-600">2.</span> Osnove logike prvog reda
+        </h2>
+
+        <div class="example-card bg-amber-50/60 p-4 rounded-xl border border-amber-200 mb-6">
+          <span class="text-xs font-bold uppercase tracking-wide text-amber-800 block mb-1">Motivacijski primjer: Zašto logika prvog reda?</span>
+          <p class="text-sm text-amber-900 leading-relaxed">
+            Čovjek intuitivno zaključuje: ako znade da su mačke sisavci i da svi sisavci piju mlijeko, zaključit će da mačke piju mlijeko.
+            U propozicijskoj logici tvrdnje <i>"Mačke piju mlijeko"</i> (A), <i>"Mačke su sisavci"</i> (B) i <i>"Sisavci piju mlijeko"</i> (C) promatramo kao zasebne, nedjeljive varijable. Ne možemo izraziti unutarnju strukturu niti odnose među objektima, pa tvrdnja (A) nije logička posljedica od (B) i (C). Zato nam je potreban izražajniji sustav — <strong>Logika prvog reda</strong>.
+          </p>
+        </div>
+
+        <h3 class="text-lg font-bold text-slate-800 mb-3">Sintaksa logike prvog reda</h3>
+        <p class="text-slate-600 text-sm mb-4">
+          <strong>Alfabet logike prvog reda</strong> sastoji se od logičkih simbola (&not;, &and;, &or;, &rarr;, &harr;, &forall;, &exist;), prebrojivo mnogo varijabli (x, y, z, ...), nelogičkih simbola (n-mjesni relacijski i funkcijski simboli, konstante) te pomoćnih simbola.
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          <div class="definition-card bg-slate-50 p-4 rounded-xl border border-slate-200">
+            <span class="text-xs font-bold text-blue-600 uppercase tracking-wide">Definicija 2.1</span>
+            <h4 class="font-bold text-slate-800 text-base mb-2">Term</h4>
+            <ul class="text-xs text-slate-600 space-y-1.5 list-disc pl-4">
+              <li>Konstanta je term.</li>
+              <li>Varijabla je term.</li>
+              <li>Ako je <code class="bg-slate-200 px-1 rounded">f</code> n-mjesni funkcijski simbol, a <code class="bg-slate-200 px-1 rounded">t₁,...,tₙ</code> termi, onda je <code class="bg-slate-200 px-1 rounded">f(t₁,...,tₙ)</code> term.</li>
+              <li>Ništa osim izraza dobivenih primjenom ovih pravila nije term.</li>
+            </ul>
+          </div>
+
+          <div class="definition-card bg-slate-50 p-4 rounded-xl border border-slate-200">
+            <span class="text-xs font-bold text-blue-600 uppercase tracking-wide">Definicija 2.2</span>
+            <h4 class="font-bold text-slate-800 text-base mb-2">Atomarna formula</h4>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              Ako je <code class="bg-slate-200 px-1 rounded">P</code> n-mjesni relacijski simbol i ako su <code class="bg-slate-200 px-1 rounded">t₁,...,tₙ</code> termi, onda je izraz <code class="bg-slate-200 font-semibold px-1.5 py-0.5 rounded text-blue-900">P(t₁,...,tₙ)</code> atomarna formula. Nijedan drugi izraz nije atomarna formula.
+            </p>
+          </div>
+
+          <div class="definition-card bg-slate-50 p-4 rounded-xl border border-slate-200">
+            <span class="text-xs font-bold text-blue-600 uppercase tracking-wide">Definicija 2.3</span>
+            <h4 class="font-bold text-slate-800 text-base mb-2">Formula</h4>
+            <p class="text-xs text-slate-600 leading-relaxed mb-2">Formule definiramo rekurzivno:</p>
+            <ol class="text-xs text-slate-600 space-y-1 list-decimal pl-4">
+              <li>Atomarna formula je formula.</li>
+              <li>Ako su F i G formule, onda su &not;(F), (F &or; G), (F &and; G), (F &rarr; G) i (F &harr; G) formule.</li>
+              <li>Ako je F formula, a x varijabla, onda su &forall;xF i &exist;xF formule.</li>
+            </ol>
+          </div>
+
+          <div class="definition-card bg-slate-50 p-4 rounded-xl border border-slate-200">
+            <span class="text-xs font-bold text-blue-600 uppercase tracking-wide">Definicija 2.4</span>
+            <h4 class="font-bold text-slate-800 text-base mb-2">Slobodna / Vezana varijabla</h4>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              U formulama oblika &forall;xF ili &exist;xF, pojava varijable <code class="bg-slate-200 px-1 rounded">x</code> u F je <strong>vezana</strong> ako je u dosegu kvantifikatora, inače je <strong>slobodna</strong>.
+            </p>
+          </div>
+        </div>
+
+        <h3 class="text-lg font-bold text-slate-800 mb-3">Semantika logike prvog reda</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <div class="definition-card bg-slate-50 p-4 rounded-xl border border-slate-200">
+            <span class="text-xs font-bold text-blue-600 uppercase tracking-wide">Definicija 2.5</span>
+            <h4 class="font-bold text-slate-800 text-sm mb-1">&sigma;-struktura &mathcal;A</h4>
+            <p class="text-xs text-slate-600">
+              Sastoji se od nepraznog skupa <i>A</i> (nosač) i interpretacije koja konstantskim simbolima pridružuje elemente, funkcijskim simbolima funkcije, a relacijskim simbolima relacije na nosaču.
+            </p>
+          </div>
+
+          <div class="definition-card bg-slate-50 p-4 rounded-xl border border-slate-200">
+            <span class="text-xs font-bold text-blue-600 uppercase tracking-wide">Definicija 2.6</span>
+            <h4 class="font-bold text-slate-800 text-sm mb-1">Valuacija i Interpretacija</h4>
+            <p class="text-xs text-slate-600">
+              Valuacija <i>v</i> pridružuje varijablama elemente nosača A. Uređeni par (&mathcal;A, v) nazivamo interpretacijom.
+            </p>
+          </div>
+
+          <div class="definition-card bg-slate-50 p-4 rounded-xl border border-slate-200">
+            <span class="text-xs font-bold text-blue-600 uppercase tracking-wide">Definicija 2.8</span>
+            <h4 class="font-bold text-slate-800 text-sm mb-1">Ispunjivost, Oborivost, Valjanost</h4>
+            <p class="text-xs text-slate-600">
+              Formula F je <strong>ispunjiva</strong> ako postoji interpretacija u kojoj je istinita; <strong>oboriva</strong> ako postoji interpretacija u kojoj je neistinita; <strong>valjana</strong> ako je istinita u svim interpretacijama.
+            </p>
+          </div>
+        </div>
+
+        <div class="bg-slate-900 text-slate-200 p-4 rounded-xl text-xs space-y-2">
+          <span class="text-blue-400 font-bold uppercase tracking-wider block mb-1">Definicija 2.7 — Rekurzivna istinitost formule &mathcal;A &vDash;ᵥ F</span>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-slate-300">
+            <div>&bull; &mathcal;A &vDash;ᵥ R(t₁,...,tₙ) &hArr; (t₁&mathcal;A[v],...,tₙ&mathcal;A[v]) &in; R&mathcal;A</div>
+            <div>&bull; &mathcal;A &vDash;ᵥ &not;F &hArr; &mathcal;A &nvash;ᵥ F</div>
+            <div>&bull; &mathcal;A &vDash;ᵥ (F &and; G) &hArr; &mathcal;A &vDash;ᵥ F i &mathcal;A &vDash;ᵥ G</div>
+            <div>&bull; &mathcal;A &vDash;ᵥ (F &or; G) &hArr; &mathcal;A &vDash;ᵥ F ili &mathcal;A &vDash;ᵥ G</div>
+            <div>&bull; &mathcal;A &vDash;ᵥ &forall;xF &hArr; F istinita za sve vrijednosti varijable x</div>
+            <div>&bull; &mathcal;A &vDash;ᵥ &exist;xF &hArr; F istinita za barem jednu vrijednost varijable x</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section id="priprema" class="tab-content hidden space-y-6">
+      <div class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200">
+        <h2 class="text-2xl font-bold text-slate-800 mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">
+          <span class="text-blue-600">3.</span> Priprema formula za rezoluciju
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          <div class="definition-card bg-slate-50 p-4 rounded-xl border border-slate-200">
+            <span class="text-xs font-bold text-blue-600 uppercase tracking-wide">Definicija 3.1</span>
+            <h4 class="font-bold text-slate-800 text-base mb-2">Literal i Klauzula</h4>
+            <p class="text-xs text-slate-600 leading-relaxed mb-2">
+              <strong>Literal</strong> je atomarna formula ili njezina negacija. <br>
+              <strong>Klauzula</strong> je disjunkcija konačno mnogo literala.
+            </p>
+            <div class="p-2 bg-slate-200/60 rounded text-xs text-slate-800 font-mono">
+              Prazna klauzula (&square;) ne sadrži nijedan literal i uvijek je neistinita (označava proturječje).
+            </div>
+          </div>
+
+          <div class="definition-card bg-slate-50 p-4 rounded-xl border border-slate-200">
+            <span class="text-xs font-bold text-blue-600 uppercase tracking-wide">Definicija 3.2</span>
+            <h4 class="font-bold text-slate-800 text-base mb-2">Normalna konjunktivna forma (CNF)</h4>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              Formula je u CNF-u ako je zapisana kao konjunkcija konačno mnogo klauzula.
+            </p>
+            <div class="mt-2 text-xs font-mono text-blue-700 bg-blue-50 p-2 rounded border border-blue-200">
+              Primjer CNF: (P &or; Q) &and; (&not;R &or; S)
+            </div>
+          </div>
+        </div>
+
+        <h3 class="text-lg font-bold text-slate-800 mb-3">Koraci prevođenja u oblik pogodan za rezoluciju</h3>
+        <div class="space-y-3">
+          <div class="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200">
+            <span class="bg-blue-600 text-white font-bold text-xs w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5">1</span>
+            <div class="text-xs text-slate-600">
+              <strong class="text-slate-800">Uklanjanje veznika &rarr; i &harr;:</strong> Zamjena s ekvivalentnim zapisima: <code class="bg-slate-200 px-1 rounded">F &rarr; G &equiv; &not;F &or; G</code>.
+            </div>
+          </div>
+
+          <div class="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200">
+            <span class="bg-blue-600 text-white font-bold text-xs w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5">2</span>
+            <div class="text-xs text-slate-600">
+              <strong class="text-slate-800">Svođenje negacija (De Morganovi zakoni):</strong> Premještanje negacija neposredno ispred atomarnih formula: <code class="bg-slate-200 px-1 rounded">&not;(F &and; G) &equiv; &not;F &or; &not;G</code>. Dobivamo <i>normalnu negacijsku formu</i>.
+            </div>
+          </div>
+
+          <div class="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200">
+            <span class="bg-blue-600 text-white font-bold text-xs w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5">3</span>
+            <div class="text-xs text-slate-600">
+              <strong class="text-slate-800">Skolemizacija (Uklanjanje &exist;):</strong> Egzistencijalni kvantifikatori zamjenjuju se Skolemovim konstantama ili funkcijskim simbolima.
+            </div>
+          </div>
+        </div>
+
+        <div class="definition-card bg-blue-50/50 p-4 rounded-xl border border-blue-200 mt-6">
+          <span class="text-xs font-bold text-blue-700 uppercase tracking-wide block mb-1">Definicija 3.3 — Skolemizacija</span>
+          <p class="text-xs text-slate-700 leading-relaxed mb-3">
+            Postupak uklanjanja egzistencijalnih kvantifikatora koji <strong>ne čuva logičku ekvivalenciju, ali čuva ispunjivost</strong> (satisfiability).
+          </p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+            <div class="bg-white p-3 rounded-lg border border-slate-200">
+              <span class="font-bold text-slate-800">Bez obuhvata &forall;:</span> Zamjena novom konstantom.
+              <div class="font-mono text-blue-800 mt-1">&exist;x P(x) &rArr; P(c)</div>
+            </div>
+            <div class="bg-white p-3 rounded-lg border border-slate-200">
+              <span class="font-bold text-slate-800">Unutar obuhvata &forall;x:</span> Zamjena novom funkcijom.
+              <div class="font-mono text-blue-800 mt-1">&forall;x &exist;y P(x,y) &rArr; &forall;x P(x, f(x))</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section id="unifikacija" class="tab-content hidden space-y-6">
+      <div class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200">
+        <h2 class="text-2xl font-bold text-slate-800 mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">
+          <span class="text-blue-600">4.</span> Unifikacija
+        </h2>
+        <p class="text-slate-600 text-sm mb-6">
+          Unifikacija je postupak izjednačavanja termova ili literala primjenom odgovarajućih supstitucija.
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <div class="definition-card bg-slate-50 p-4 rounded-xl border border-slate-200">
+            <span class="text-xs font-bold text-blue-600 uppercase tracking-wide">Definicija 4.1</span>
+            <h4 class="font-bold text-slate-800 text-sm mb-1">Supstitucija</h4>
+            <p class="text-xs text-slate-600">
+              Konačan skup uređenih parova <code class="bg-slate-200 px-1 rounded">{x &mapsto; t}</code> gdje je x varijabla, a t term. Označava se sa &sigma;.
+            </p>
+          </div>
+
+          <div class="definition-card bg-slate-50 p-4 rounded-xl border border-slate-200">
+            <span class="text-xs font-bold text-blue-600 uppercase tracking-wide">Definicija 4.2</span>
+            <h4 class="font-bold text-slate-800 text-sm mb-1">Unifikator</h4>
+            <p class="text-xs text-slate-600">
+              Supstitucija &sigma; je unifikator termova t₁ i t₂ ako vrijedi: <code class="bg-slate-200 px-1 rounded">t₁&sigma; = t₂&sigma;</code>.
+            </p>
+          </div>
+
+          <div class="definition-card bg-slate-50 p-4 rounded-xl border border-slate-200">
+            <span class="text-xs font-bold text-blue-600 uppercase tracking-wide">Definicija 4.3</span>
+            <h4 class="font-bold text-slate-800 text-sm mb-1">Najopćenitiji unifikator (MGU)</h4>
+            <p class="text-xs text-slate-600">
+              Unifikator &sigma; je MGU ako se svaki drugi unifikator &theta; može prikazati kao kompozicija: <code class="bg-slate-200 px-1 rounded">&theta; = &sigma; &compfn; &delta;</code>.
+            </p>
+          </div>
+        </div>
+
+        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 mb-6">
+          <h3 class="text-sm font-bold text-slate-800 mb-2">Algoritam unifikacije & Provjera pojavnosti (Occurs Check)</h3>
+          <p class="text-xs text-slate-600 leading-relaxed mb-3">
+            Algoritam uspoređuje strukture termova s lijeva na desno. Ključan je uvjet <strong>provjera pojavnosti</strong> koji zabranjuje zamjenu varijable termom u kojem se ta varijabla već nalazi (npr. unifikacija <code class="bg-slate-200 px-1 rounded">x</code> i <code class="bg-slate-200 px-1 rounded">f(x)</code> nije moguća jer bi stvorila beskonačnu petlju).
+          </p>
+        </div>
+
+        <div class="example-card bg-amber-50/50 p-5 rounded-xl border border-amber-200">
+          <span class="text-xs font-bold uppercase tracking-wide text-amber-800 block mb-2">Detaljan primjer unifikacije iz teksta</span>
+          <p class="text-xs text-slate-700 font-semibold mb-3">
+            Želimo unificirati termove: <code class="text-blue-900 bg-amber-100/80 px-2 py-0.5 rounded font-mono">t₁ = f(x, g(y))</code> i <code class="text-blue-900 bg-amber-100/80 px-2 py-0.5 rounded font-mono">t₂ = f(g(a), g(z))</code>
+          </p>
+
+          <div class="space-y-2 text-xs font-mono">
+            <div class="bg-white p-2.5 rounded border border-amber-200 flex justify-between items-center">
+              <span>Korak 1: Usporedba simbola funkcije na vrhu</span>
+              <span class="text-emerald-700 font-bold">Oba su 'f' (prolaz)</span>
+            </div>
+            <div class="bg-white p-2.5 rounded border border-amber-200 flex justify-between items-center">
+              <span>Korak 2: Prvi argumenti: x i g(a)</span>
+              <span class="text-blue-700 font-bold">&sigma;₁ = { x &mapsto; g(a) }</span>
+            </div>
+            <div class="bg-white p-2.5 rounded border border-amber-200 flex justify-between items-center">
+              <span>Korak 3: Drugi argumenti: g(y) i g(z)</span>
+              <span class="text-blue-700 font-bold">&sigma;₂ = { y &mapsto; z }</span>
+            </div>
+          </div>
+
+          <div class="mt-3 text-xs bg-amber-100/80 p-3 rounded font-mono text-amber-950 font-bold">
+            Konačni najopćenitiji unifikator (MGU): &sigma; = { x &mapsto; g(a), y &mapsto; z }<br>
+            Provjera: t₁&sigma; = f(g(a), g(z)) = t₂&sigma;
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section id="rezolucija" class="tab-content hidden space-y-6">
+      <div class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200">
+        <h2 class="text-2xl font-bold text-slate-800 mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">
+          <span class="text-blue-600">5.</span> Rezolucija & Faktorizacija
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          <div class="definition-card bg-slate-50 p-4 rounded-xl border border-slate-200">
+            <span class="text-xs font-bold text-blue-600 uppercase tracking-wide">Definicija 5.1</span>
+            <h4 class="font-bold text-slate-800 text-base mb-1">Rezolventa</h4>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              Neka su K₁ = {L₁} &cup; C₁ i K₂ = {&not;L₂} &cup; C₂ te &sigma; MGU za L₁ i L₂. Klauzula:
+            </p>
+            <div class="my-2 text-center text-xs font-mono font-bold bg-blue-50 text-blue-900 py-1.5 rounded border border-blue-200">
+              R = (C₁ &cup; C₂)&sigma;
+            </div>
+            <p class="text-xs text-slate-600">
+              naziva se rezolventom klauzula K₁ i K₂.
+            </p>
+          </div>
+
+          <div class="definition-card bg-slate-50 p-4 rounded-xl border border-slate-200">
+            <span class="text-xs font-bold text-blue-600 uppercase tracking-wide">Definicija 6.1</span>
+            <h4 class="font-bold text-slate-800 text-base mb-1">Faktorizacija</h4>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              Neka je K = {L₁, L₂} &cup; C i &sigma; MGU za L₁ i L₂. Klauzula <code class="bg-slate-200 px-1 rounded">K' = ({L₁} &cup; C)&sigma;</code> naziva se faktorom klauzule K. Uklanja duplirane literale istog predznaka.
+            </p>
+          </div>
+        </div>
+
+        <div class="example-card bg-amber-50/50 p-4 rounded-xl border border-amber-200 mb-6">
+          <span class="text-xs font-bold uppercase tracking-wide text-amber-800 block mb-1">Primjer izvođenja prazne klauzule (&square;)</span>
+          <p class="text-xs text-slate-700 font-mono">
+            K₁ = { P(a) } <br>
+            K₂ = { &not;P(a) } <br>
+            Primjenom rezolucije dobivamo: <strong class="text-red-600">R = &square; (prazna klauzula &rArr; Proturječje)</strong>
+          </p>
+        </div>
+
+        <div class="theorem-card bg-emerald-50/40 p-5 rounded-xl border border-emerald-200">
+          <span class="text-xs font-bold uppercase tracking-wide text-emerald-800 block mb-1">Propozicija 5.1 — Logička posljedica rezolvente</span>
+          <p class="text-xs font-bold text-slate-800 mb-3">
+            Neka su F₁ i F₂ klauzule, a G klauzula dobivena rezolucijom F₁ i F₂. Tada vrijedi: <code class="text-emerald-900 bg-emerald-100 px-2 py-0.5 rounded font-mono">F₁, F₂ &vDash; G</code>
+          </p>
+
+          <div class="proof-card p-4 rounded-lg text-xs space-y-2 text-slate-700">
+            <span class="font-bold text-slate-900 block">Sažetak dokaza:</span>
+            <p>
+              Neka je (&mathcal;A, v) proizvoljna interpretacija u kojoj su F₁ i F₂ istinite. Budući da su L₁&sigma; i &not;L₂&sigma; komplementarni literali, točno jedan mora biti neistinit u (&mathcal;A, v).
+            </p>
+            <ul class="list-disc pl-4 space-y-1">
+              <li>Ako je L₁&sigma; istinit &rArr; &not;L₂&sigma; je neistinit. Da bi F₂&sigma; bila istinita, K₂&sigma; mora biti istinita &rArr; G je istinita.</li>
+              <li>Ako je L₁&sigma; neistinit &rArr; F₁&sigma; povlači da K₁&sigma; mora biti istinita &rArr; G je istinita.</li>
+            </ul>
+            <p class="font-medium text-slate-800 pt-1">Zaključak: U svim interpretacijama gdje vrijede roditelji, vrijedi i rezolvent G.</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section id="svojstva" class="tab-content hidden space-y-6">
+      <div class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200">
+        <h2 class="text-2xl font-bold text-slate-800 mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">
+          <span class="text-blue-600">6.</span> Ispravnost i Potpunost rezolucije
+        </h2>
+
+        <div class="theorem-card bg-emerald-50/40 p-5 rounded-xl border border-emerald-200 mb-6">
+          <span class="text-xs font-bold uppercase tracking-wide text-emerald-800 block mb-1">Teorem 6.1 — Ispravnost rezolucije (Soundness)</span>
+          <p class="text-sm font-bold text-slate-800 mb-2">
+            Neka je &Gamma; skup klauzula. Ako je moguće iz &Gamma; rezolucijom i faktorizacijom izvesti praznu klauzulu (&square;), tada je &Gamma; neispunjiv.
+          </p>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            <strong>Bit dokaza:</strong> Rezolvente i faktori su logičke posljedice svojih roditelja. Kada bi &Gamma; bio ispunjiv, sve izvedene klauzule morale bi biti istinite u toj interpretaciji. No, prazna klauzula &square; je uvijek neistinita — kontradikcija!
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          <div class="theorem-card bg-emerald-50/30 p-4 rounded-xl border border-emerald-200">
+            <span class="text-xs font-bold text-emerald-800 uppercase tracking-wide">Teorem 6.2</span>
+            <h4 class="font-bold text-slate-800 text-sm mb-1">Herbrandov teorem</h4>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              Skup klauzula logike prvog reda neispunjiv je ako i samo ako postoji <strong>konačan skup njegovih prizemljenih instanci</strong> (instanci bez varijabli) koji je neispunjiv.
+            </p>
+          </div>
+
+          <div class="theorem-card bg-emerald-50/30 p-4 rounded-xl border border-emerald-200">
+            <span class="text-xs font-bold text-emerald-800 uppercase tracking-wide">Propozicija 6.1</span>
+            <h4 class="font-bold text-slate-800 text-sm mb-1">Lema o podizanju (Lifting Lemma)</h4>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              Omogućuje da se rezolucija provedena nad prizemljenim instancama "podigne" i prenese na izvorne klauzule s varijablama.
+            </p>
+          </div>
+        </div>
+
+        <div class="theorem-card bg-emerald-50/40 p-5 rounded-xl border border-emerald-200">
+          <span class="text-xs font-bold uppercase tracking-wide text-emerald-800 block mb-1">Teorem 6.3 — Potpunost rezolucije (Completeness)</span>
+          <p class="text-sm font-bold text-slate-800 mb-2">
+            Neka je &Gamma; konačan skup klauzula logike prvog reda. Ako je &Gamma; neispunjiv, tada je moguće primjenom pravila rezolucije i faktorizacije izvesti praznu klauzulu.
+          </p>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            <strong>Skica dokaza:</strong> Svođenjem na Herbrandove prizemljene instance koristi se potpunost rezolucije u propozicijskoj logici, a potom se Lema o podizanju koristi za prenos dokaza na opće klauzule prvog reda.
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+    <section id="literatura" class="tab-content hidden space-y-6">
+      <div class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200">
+        <h2 class="text-2xl font-bold text-slate-800 mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">
+          <span class="text-blue-600">7.</span> Zaključak & Literatura
+        </h2>
+
+        <div class="mb-8">
+          <h3 class="text-lg font-bold text-slate-800 mb-2">Zaključak</h3>
+          <p class="text-slate-600 text-sm leading-relaxed bg-slate-50 p-4 rounded-xl border border-slate-200">
+            Dokazali smo dva temeljna svojstva rezolucijskog postupka: <strong>ispravnost</strong> i <strong>potpunost</strong>. Ispravnost nam jamči da izvođenje prazne klauzule uvijek odgovara stvarnom proturječju, dok potpunost jamči da se svako proturječje može dokazati. Zajedno s unifikacijom i Skolemizacijom, ovi principi čine čvrst temelj modernim sustavima za automatsko dokazivanje teorema i logičkom programiranju.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="text-lg font-bold text-slate-800 mb-3">Literatura</h3>
+          <ol class="space-y-2 text-xs text-slate-700 list-decimal pl-5">
+            <li class="p-2.5 bg-slate-50 rounded-lg border border-slate-200">
+              <strong>V. Čačić i M. Horvat</strong>, <i>Matematička logika i računarstvo</i>, prezentacija, akademska godina 2022./2023. (izvorni autor slajdova: Tin Perkov).
+            </li>
+            <li class="p-2.5 bg-slate-50 rounded-lg border border-slate-200">
+              <strong>C.-L. Chang i R. C.-T. Lee</strong>, <i>Symbolic Logic and Mechanical Theorem Proving</i>, Academic Press, 1973.
+            </li>
+          </ol>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="bg-slate-900 text-slate-400 text-xs py-6 border-t border-slate-800 mt-auto">
+    <div class="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-2">
+      <div>
+        &copy; 2026. Marko Golemac &bull; Seminar: Unifikacija i rezolucija u logici prvog reda
+      </div>
+      <div class="text-slate-500">
+        Izrađeno u čistom HTML/CSS/JS okviru
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function showSection(sectionId) {
+      // Sakrij sve sekcije
+      const sections = document.querySelectorAll('.tab-content');
+      sections.forEach(sec => sec.classList.add('hidden'));
+
+      // Prikazi odabranu sekciju
+      const targetSection = document.getElementById(sectionId);
+      if (targetSection) {
+        targetSection.classList.remove('hidden');
+      }
+
+      // Ažuriraj stilove navigacijskih gumba
+      const buttons = document.querySelectorAll('.nav-btn');
+      buttons.forEach(btn => {
+        btn.classList.remove('bg-blue-600', 'text-white');
+        btn.classList.add('text-slate-300', 'hover:text-white', 'hover:bg-slate-700');
+      });
+
+      const activeBtn = document.getElementById('btn-' + sectionId);
+      if (activeBtn) {
+        activeBtn.classList.remove('text-slate-300', 'hover:text-white', 'hover:bg-slate-700');
+        activeBtn.classList.add('bg-blue-600', 'text-white');
+      }
+
+      // Glatko pomakni na vrh pri promjeni
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  </script>
+
+</body>
+</html>
